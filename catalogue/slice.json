@@ -1,0 +1,505 @@
+{
+ "rule": "Per language: catalogue classes marked for every domain, ranked by how many distinct repositories they were planted in, never by whether they were caught; name and one-line how-to only.",
+ "kinds": {
+  "go": [
+   {
+    "name": "max-count limit off by one",
+    "how": ">= to > on the count check"
+   },
+   {
+    "name": "failure swallowed into a success-shaped return",
+    "how": "replace raise with return None in the except block"
+   },
+   {
+    "name": "a function that picks between two values (the known one, the fallback, the non-null side) returns the other operand, so the result is the input it was meant to discard",
+    "how": "swap which operand a selector, coalescing or unknown-aware helper returns"
+   },
+   {
+    "name": "a packing loop stops at the first item that does not fit instead of skipping it (or skips where it must stop), so later fitting items are dropped or the result has holes",
+    "how": "replace continue with break (or the reverse) in a budget-filling loop"
+   },
+   {
+    "name": "an operation illegal for the current status is accepted",
+    "how": "disable the status guard on a lifecycle transition"
+   },
+   {
+    "name": "a vectorized filter passes a null-propagating predicate mask to a null-dropping filter, so rows with a missing key vanish like false matches",
+    "how": "remove fill_null(False) before the filter / leave Table.filter's null-drop unguarded"
+   },
+   {
+    "name": "an explicit empty value meant to clear a field (an empty list or map in an update) is dropped or ignored, so the stored entries survive the clear",
+    "how": "drop empty arrays or maps from an outgoing update body (or skip the update when the new map is empty)"
+   },
+   {
+    "name": "two configuration layers are applied in the reverse of their documented precedence, so the value that should override (a Secret over a ConfigMap) is silently overridden",
+    "how": "swap the order in which the overriding and the base layer are applied"
+   },
+   {
+    "name": "a number written in one base (an octal file mode) is parsed in another, so '0600' becomes 600 decimal and files land with the wrong permissions",
+    "how": "parse an octal mode string with base 10"
+   },
+   {
+    "name": "a template or placeholder rewrite loses the exemption for content it must leave verbatim (folded tool results, {{$value}}), so that content is substituted or blanked",
+    "how": "remove the guard that skips exempt items in a substitution pass"
+   },
+   {
+    "name": "an insert that must overwrite an existing entry finds it and returns without storing the new value, so a second write of the same key silently keeps the first",
+    "how": "return early on finding the existing entry instead of updating its value"
+   },
+   {
+    "name": "a lookup filters rows on the concrete key only, so global '*' rows are never loaded and organization-wide rules stop applying",
+    "how": "filter a rule scan by the concrete account only, without the '*' rows"
+   },
+   {
+    "name": "a setter changes a value but skips the step that marks its container as modified, so commit or flush skips it and the change is lost after reopen",
+    "how": "remove the call that materializes or marks the owner dirty from the setter"
+   },
+   {
+    "name": "a find-or-create reports a found record as newly created, so the caller re-imports or duplicates its children",
+    "how": "set created=true on the found branch of a find-or-create"
+   },
+   {
+    "name": "a default or fallback branch is taken even though a specific branch already matched, so both the chosen path and the fallback run (duplicated, wrong work)",
+    "how": "drop the matched flag so the default edge also fires when a concrete route matched"
+   },
+   {
+    "name": "a percentage or weight is replaced by its complement (100 minus p instead of p), so a 10% share gets 90% and a full promotion gets none",
+    "how": "replace a percentage or weight p with 100-p (or 1-p) where it is passed on as a share of traffic or load"
+   },
+   {
+    "name": "a change notification clears one cache but not a sibling cache derived from the same source, so the sibling keeps serving the stale list until its TTL runs out",
+    "how": "drop the invalidation call for one of the caches that a change notification must clear"
+   },
+   {
+    "name": "the policy/allow gate matches raw input (host case, trailing dot, encoding) while a neighbouring ACL normalizes — the kontext raw-input class, now seen as an asymmetry",
+    "how": "drop the ,lower / normalization from the gate ACL only"
+   },
+   {
+    "name": "a value is moved to its new home but not cleared from the old one, so it also flows into a second destination and produces a false validation error or a duplicate setting",
+    "how": "after copying a flag/field into its destination struct, delete the line that zeroes the source, so a later stage reads it again"
+   },
+   {
+    "name": "a reported count includes items that should have been excluded (a row that is being deleted, duplicates the policy skipped), so totals overstate what happened",
+    "how": "drop the subtraction of skipped or deleted items from a reported count"
+   },
+   {
+    "name": "an event already recorded as processed is processed again",
+    "how": "disable the already-processed short-circuit"
+   },
+   {
+    "name": "a dry-run branch prints its preview but does not stop (or resolves the live account), so the real, possibly billable action runs anyway",
+    "how": "remove the return after the dry-run preview"
+   },
+   {
+    "name": "an index into a flattened (group x item, query x class) array is computed with the wrong stride or without the group index, so elements are attributed to the wrong row",
+    "how": "divide a flattened index by the wrong dimension (or drop the group multiplier)"
+   },
+   {
+    "name": "chained operators of equal priority group right-to-left instead of left-to-right, so a - b - c or a * b / c computes a different value",
+    "how": "make the operator stack pop only strictly higher-priority operators so same-priority operators group right-to-left"
+   },
+   {
+    "name": "a key parser keeps the leading separator in the extracted part, so 'index#alias#key' never matches its 'alias#key' and dependent checks skip",
+    "how": "slice from the separator's index instead of index + 1"
+   },
+   {
+    "name": "an overlay merge records only live entries as seen, so a base entry deleted in the overlay reappears in listings",
+    "how": "exclude tombstoned names from the overlay's seen set"
+   },
+   {
+    "name": "a limiter slot or lease acquired for a unit of work is not released when the work ends, so slots leak until new work is refused as rate limited",
+    "how": "remove the release call on the completion path of a guarded flow"
+   },
+   {
+    "name": "an upper bound used for pruning leaves out one contributing term (the head element's own weight), so items that can still win are skipped unscored",
+    "how": "drop one term from a pruning bound's sum"
+   },
+   {
+    "name": "last element of the window processed twice",
+    "how": "append the last session to the loop list"
+   },
+   {
+    "name": "a weighted check-digit algorithm doubles or weights the wrong positions (even for odd), so valid identifiers fail and invalid ones pass (genuine card numbers fail Luhn)",
+    "how": "swap the even and odd arms of a check-digit loop"
+   },
+   {
+    "name": "a squash of change records keeps the earlier added value when the same record is later updated, so the coalesced diff carries a stale value",
+    "how": "drop the update branch when coalescing an add followed by an update"
+   },
+   {
+    "name": "a documented deep copy (clone) returns the same mutable buffer for bytes fields instead of a slice copy, so writing into the copy rewrites the source",
+    "how": "return the original Uint8Array instead of a copy in the clone path"
+   },
+   {
+    "name": "a timestamp is truncated to a coarser or finer unit than documented (month instead of day), so per-day buckets collapse into one entry whose date label is a month",
+    "how": "change the strftime/truncation format or unit used to bucket timestamps (day to month)"
+   },
+   {
+    "name": "a de-duplication is keyed on the raw input instead of the transformed value, so inputs that map to the same output are not collapsed and the output repeats it",
+    "how": "record and check the seen-set on the pre-transform value instead of the transformed one"
+   },
+   {
+    "name": "generated collections ship with framework-default access (any authenticated user reads/mutates all rows)",
+    "how": "n/a — native; assess with access on and a second user"
+   },
+   {
+    "name": "a map merge skips a key that is already present instead of reporting the duplicate, so two writers of one key merge without error and one value is silently lost",
+    "how": "replace the duplicated-key error in a map merge with a skip of the existing key"
+   }
+  ],
+  "python": [
+   {
+    "name": "max-count limit off by one",
+    "how": ">= to > on the count check"
+   },
+   {
+    "name": "failure swallowed into a success-shaped return",
+    "how": "replace raise with return None in the except block"
+   },
+   {
+    "name": "a function that picks between two values (the known one, the fallback, the non-null side) returns the other operand, so the result is the input it was meant to discard",
+    "how": "swap which operand a selector, coalescing or unknown-aware helper returns"
+   },
+   {
+    "name": "an event already recorded as processed is processed again",
+    "how": "disable the already-processed short-circuit"
+   },
+   {
+    "name": "a vectorized filter passes a null-propagating predicate mask to a null-dropping filter, so rows with a missing key vanish like false matches",
+    "how": "remove fill_null(False) before the filter / leave Table.filter's null-drop unguarded"
+   },
+   {
+    "name": "an operation illegal for the current status is accepted",
+    "how": "disable the status guard on a lifecycle transition"
+   },
+   {
+    "name": "a paginated fetch leaves the offset out of a size or slice computation (candidate count from limit alone, slice(skip, take)), so page two onward comes back short or empty",
+    "how": "compute a page's end or fetch size from the limit alone instead of offset + limit"
+   },
+   {
+    "name": "aware datetime coerced naive across a round-trip",
+    "how": "strip tzinfo in the serializer"
+   },
+   {
+    "name": "two configuration layers are applied in the reverse of their documented precedence, so the value that should override (a Secret over a ConfigMap) is silently overridden",
+    "how": "swap the order in which the overriding and the base layer are applied"
+   },
+   {
+    "name": "a FULL OUTER join becomes LEFT OUTER, so keys present only on the right side (churned customers in a comparison period) disappear silently",
+    "how": "replace FULL OUTER JOIN with LEFT OUTER JOIN in a comparison query"
+   },
+   {
+    "name": "a window comparison uses the wrong aggregate (SUM where AVG is reported), so a series fires on the total instead of the average",
+    "how": "compare the window sum where the window average is documented"
+   },
+   {
+    "name": "identity in the record taken from caller-supplied fields",
+    "how": "n/a — assess where identity comes from"
+   },
+   {
+    "name": "a reported count includes items that should have been excluded (a row that is being deleted, duplicates the policy skipped), so totals overstate what happened",
+    "how": "drop the subtraction of skipped or deleted items from a reported count"
+   },
+   {
+    "name": "a process-wide validation cache records a rejected definition as valid, so the next compile of the same invalid input skips validation and reports no error",
+    "how": "record the cache fingerprint before (or regardless of) the validation result"
+   },
+   {
+    "name": "an index into a flattened (group x item, query x class) array is computed with the wrong stride or without the group index, so elements are attributed to the wrong row",
+    "how": "divide a flattened index by the wrong dimension (or drop the group multiplier)"
+   },
+   {
+    "name": "merging overlapping intervals takes the later interval's end unconditionally instead of the max of both ends, so a nested interval shrinks the merged span",
+    "how": "assign end = next.end instead of max(end, next.end) when merging overlaps"
+   },
+   {
+    "name": "numbers are sorted without a numeric comparator ([5, 10, 20] becomes [10, 20, 5]), so a median or ranking read from the sorted list is wrong",
+    "how": "call sort() without a numeric comparator on a numeric array"
+   },
+   {
+    "name": "a percentage or weight is replaced by its complement (100 minus p instead of p), so a 10% share gets 90% and a full promotion gets none",
+    "how": "replace a percentage or weight p with 100-p (or 1-p) where it is passed on as a share of traffic or load"
+   },
+   {
+    "name": "one field of a validated identifier family skips the family's validator and reaches a shell/query string (ValidateGuid on every sibling id but not this one)",
+    "how": "route one field of the identifier family past the family validator (a second entry point that skips ValidateX)"
+   },
+   {
+    "name": "a list-shaped expression over a one-item input returns a bare value (and an empty input returns a sentinel instead of []), so consumers expecting a list break",
+    "how": "drop the list-expression marker so one-item results are unwrapped"
+   },
+   {
+    "name": "a limiter slot or lease acquired for a unit of work is not released when the work ends, so slots leak until new work is refused as rate limited",
+    "how": "remove the release call on the completion path of a guarded flow"
+   },
+   {
+    "name": "last element of the window processed twice",
+    "how": "append the last session to the loop list"
+   },
+   {
+    "name": "a packing loop stops at the first item that does not fit instead of skipping it (or skips where it must stop), so later fitting items are dropped or the result has holes",
+    "how": "replace continue with break (or the reverse) in a budget-filling loop"
+   },
+   {
+    "name": "the policy/allow gate matches raw input (host case, trailing dot, encoding) while a neighbouring ACL normalizes — the kontext raw-input class, now seen as an asymmetry",
+    "how": "drop the ,lower / normalization from the gate ACL only"
+   },
+   {
+    "name": "a weighted check-digit algorithm doubles or weights the wrong positions (even for odd), so valid identifiers fail and invalid ones pass (genuine card numbers fail Luhn)",
+    "how": "swap the even and odd arms of a check-digit loop"
+   },
+   {
+    "name": "a squash of change records keeps the earlier added value when the same record is later updated, so the coalesced diff carries a stale value",
+    "how": "drop the update branch when coalescing an add followed by an update"
+   },
+   {
+    "name": "an explicit empty value meant to clear a field (an empty list or map in an update) is dropped or ignored, so the stored entries survive the clear",
+    "how": "drop empty arrays or maps from an outgoing update body (or skip the update when the new map is empty)"
+   },
+   {
+    "name": "a default or fallback branch is taken even though a specific branch already matched, so both the chosen path and the fallback run (duplicated, wrong work)",
+    "how": "drop the matched flag so the default edge also fires when a concrete route matched"
+   },
+   {
+    "name": "malformed tagged value passes through instead of failing loud",
+    "how": "raise -> return raw on the tag guard"
+   },
+   {
+    "name": "an operation that must change state (reset, rotate, delete) calls the matching read instead, so it returns a current value and reports success while nothing changed",
+    "how": "replace the mutating call in a reset or rotate operation with the sibling getter"
+   },
+   {
+    "name": "not-ready sink no longer rejects; write attempted",
+    "how": "bypass the readiness guard"
+   },
+   {
+    "name": "an intermediate value (an average price) is rounded before later calculations use it, so the remainder is lost and the derived figures drift for fractional quantities",
+    "how": "round an intermediate average to 2 decimals before it is reused"
+   },
+   {
+    "name": "Redaction is applied to one collection of matches but not its sibling that shares the same underlying lines, so a secret that should be masked is printed in clear.",
+    "how": "remove the censor/mask call on one of two parallel collections that share line objects"
+   },
+   {
+    "name": "a schema transform that must mark every property required copies the original required list instead, so strict-mode validators reject schemas with optional properties",
+    "how": "copy the source required list instead of listing every property"
+   },
+   {
+    "name": "a template or placeholder rewrite loses the exemption for content it must leave verbatim (folded tool results, {{$value}}), so that content is substituted or blanked",
+    "how": "remove the guard that skips exempt items in a substitution pass"
+   },
+   {
+    "name": "an index taken from a sorted or filtered display list is applied to the raw source list, so a different entry is removed or edited",
+    "how": "pop the display index from the raw list instead of the entry's source position"
+   }
+  ],
+  "rust": [
+   {
+    "name": "max-count limit off by one",
+    "how": ">= to > on the count check"
+   },
+   {
+    "name": "a function that picks between two values (the known one, the fallback, the non-null side) returns the other operand, so the result is the input it was meant to discard",
+    "how": "swap which operand a selector, coalescing or unknown-aware helper returns"
+   },
+   {
+    "name": "failure swallowed into a success-shaped return",
+    "how": "replace raise with return None in the except block"
+   },
+   {
+    "name": "a vectorized filter passes a null-propagating predicate mask to a null-dropping filter, so rows with a missing key vanish like false matches",
+    "how": "remove fill_null(False) before the filter / leave Table.filter's null-drop unguarded"
+   },
+   {
+    "name": "a FULL OUTER join becomes LEFT OUTER, so keys present only on the right side (churned customers in a comparison period) disappear silently",
+    "how": "replace FULL OUTER JOIN with LEFT OUTER JOIN in a comparison query"
+   },
+   {
+    "name": "an operation illegal for the current status is accepted",
+    "how": "disable the status guard on a lifecycle transition"
+   },
+   {
+    "name": "a packing loop stops at the first item that does not fit instead of skipping it (or skips where it must stop), so later fitting items are dropped or the result has holes",
+    "how": "replace continue with break (or the reverse) in a budget-filling loop"
+   },
+   {
+    "name": "the policy/allow gate matches raw input (host case, trailing dot, encoding) while a neighbouring ACL normalizes — the kontext raw-input class, now seen as an asymmetry",
+    "how": "drop the ,lower / normalization from the gate ACL only"
+   },
+   {
+    "name": "an event already recorded as processed is processed again",
+    "how": "disable the already-processed short-circuit"
+   },
+   {
+    "name": "an index into a flattened (group x item, query x class) array is computed with the wrong stride or without the group index, so elements are attributed to the wrong row",
+    "how": "divide a flattened index by the wrong dimension (or drop the group multiplier)"
+   },
+   {
+    "name": "two configuration layers are applied in the reverse of their documented precedence, so the value that should override (a Secret over a ConfigMap) is silently overridden",
+    "how": "swap the order in which the overriding and the base layer are applied"
+   },
+   {
+    "name": "a number written in one base (an octal file mode) is parsed in another, so '0600' becomes 600 decimal and files land with the wrong permissions",
+    "how": "parse an octal mode string with base 10"
+   },
+   {
+    "name": "chained operators of equal priority group right-to-left instead of left-to-right, so a - b - c or a * b / c computes a different value",
+    "how": "make the operator stack pop only strictly higher-priority operators so same-priority operators group right-to-left"
+   },
+   {
+    "name": "a paginated fetch leaves the offset out of a size or slice computation (candidate count from limit alone, slice(skip, take)), so page two onward comes back short or empty",
+    "how": "compute a page's end or fetch size from the limit alone instead of offset + limit"
+   },
+   {
+    "name": "a path normalizer no longer rejects paths outside its root and returns '../..'-style relative paths, so outside files are treated as in-repository paths",
+    "how": "remove the 'outside the root' rejection from a relative-path helper"
+   }
+  ],
+  "typescript": [
+   {
+    "name": "max-count limit off by one",
+    "how": ">= to > on the count check"
+   },
+   {
+    "name": "a function that picks between two values (the known one, the fallback, the non-null side) returns the other operand, so the result is the input it was meant to discard",
+    "how": "swap which operand a selector, coalescing or unknown-aware helper returns"
+   },
+   {
+    "name": "failure swallowed into a success-shaped return",
+    "how": "replace raise with return None in the except block"
+   },
+   {
+    "name": "an event already recorded as processed is processed again",
+    "how": "disable the already-processed short-circuit"
+   },
+   {
+    "name": "a vectorized filter passes a null-propagating predicate mask to a null-dropping filter, so rows with a missing key vanish like false matches",
+    "how": "remove fill_null(False) before the filter / leave Table.filter's null-drop unguarded"
+   },
+   {
+    "name": "an operation illegal for the current status is accepted",
+    "how": "disable the status guard on a lifecycle transition"
+   },
+   {
+    "name": "two configuration layers are applied in the reverse of their documented precedence, so the value that should override (a Secret over a ConfigMap) is silently overridden",
+    "how": "swap the order in which the overriding and the base layer are applied"
+   },
+   {
+    "name": "a template or placeholder rewrite loses the exemption for content it must leave verbatim (folded tool results, {{$value}}), so that content is substituted or blanked",
+    "how": "remove the guard that skips exempt items in a substitution pass"
+   },
+   {
+    "name": "a number written in one base (an octal file mode) is parsed in another, so '0600' becomes 600 decimal and files land with the wrong permissions",
+    "how": "parse an octal mode string with base 10"
+   },
+   {
+    "name": "a key parser keeps the leading separator in the extracted part, so 'index#alias#key' never matches its 'alias#key' and dependent checks skip",
+    "how": "slice from the separator's index instead of index + 1"
+   },
+   {
+    "name": "a packing loop stops at the first item that does not fit instead of skipping it (or skips where it must stop), so later fitting items are dropped or the result has holes",
+    "how": "replace continue with break (or the reverse) in a budget-filling loop"
+   },
+   {
+    "name": "aware datetime coerced naive across a round-trip",
+    "how": "strip tzinfo in the serializer"
+   },
+   {
+    "name": "the policy/allow gate matches raw input (host case, trailing dot, encoding) while a neighbouring ACL normalizes — the kontext raw-input class, now seen as an asymmetry",
+    "how": "drop the ,lower / normalization from the gate ACL only"
+   },
+   {
+    "name": "a weighted check-digit algorithm doubles or weights the wrong positions (even for odd), so valid identifiers fail and invalid ones pass (genuine card numbers fail Luhn)",
+    "how": "swap the even and odd arms of a check-digit loop"
+   },
+   {
+    "name": "a reported count includes items that should have been excluded (a row that is being deleted, duplicates the policy skipped), so totals overstate what happened",
+    "how": "drop the subtraction of skipped or deleted items from a reported count"
+   },
+   {
+    "name": "a map merge skips a key that is already present instead of reporting the duplicate, so two writers of one key merge without error and one value is silently lost",
+    "how": "replace the duplicated-key error in a map merge with a skip of the existing key"
+   },
+   {
+    "name": "a 12-hour to 24-hour clock conversion loses the special case for 12 AM (midnight) or 12 PM, so a time set for midnight is read as noon (hour 12 instead of 0)",
+    "how": "delete the branch that maps hour 12 AM to hour 0 (or 12 PM to 12) in the 12h-to-24h conversion"
+   },
+   {
+    "name": "an operation that must change state (reset, rotate, delete) calls the matching read instead, so it returns a current value and reports success while nothing changed",
+    "how": "replace the mutating call in a reset or rotate operation with the sibling getter"
+   },
+   {
+    "name": "numbers are sorted without a numeric comparator ([5, 10, 20] becomes [10, 20, 5]), so a median or ranking read from the sorted list is wrong",
+    "how": "call sort() without a numeric comparator on a numeric array"
+   },
+   {
+    "name": "an async call is fired without await, so the caller returns before it finishes and its errors bypass the caller's handler",
+    "how": "drop the await on an async call whose completion or errors the caller relies on"
+   },
+   {
+    "name": "an index taken from a sorted or filtered display list is applied to the raw source list, so a different entry is removed or edited",
+    "how": "pop the display index from the raw list instead of the entry's source position"
+   },
+   {
+    "name": "a registry resolves an unknown or mistyped key to the default entry instead of an error, so the caller silently uses the wrong target (the wrong warehouse's numbers)",
+    "how": "return the default connection for an unknown id"
+   },
+   {
+    "name": "week truncation is anchored on a date that is not a Monday (1970-01-01, a Thursday), so week buckets start on the wrong weekday",
+    "how": "anchor week truncation on 1970-01-01 instead of a Monday"
+   },
+   {
+    "name": "a limiter slot or lease acquired for a unit of work is not released when the work ends, so slots leak until new work is refused as rate limited",
+    "how": "remove the release call on the completion path of a guarded flow"
+   },
+   {
+    "name": "A query is encoded with the document-side prefix of an asymmetric embedding model, so query vectors no longer match the document space and ranking silently degrades.",
+    "how": "Swap the query prefix for the document prefix (or the reverse) where an asymmetric embedding model encodes text."
+   },
+   {
+    "name": "identity in the record taken from caller-supplied fields",
+    "how": "n/a — assess where identity comes from"
+   },
+   {
+    "name": "a change notification clears one cache but not a sibling cache derived from the same source, so the sibling keeps serving the stale list until its TTL runs out",
+    "how": "drop the invalidation call for one of the caches that a change notification must clear"
+   },
+   {
+    "name": "a cached connection or client is no longer dropped after a transport error, so every retry and later call reuses the dead handle and fails until the process restarts",
+    "how": "remove the line that clears the cached client in the error/catch path"
+   },
+   {
+    "name": "cancelling one member of a batch no longer cancels the rest as documented, so the remaining queued calls go on to run after the user said no",
+    "how": "remove the cascade that cancels the remaining queued items when one is denied"
+   },
+   {
+    "name": "a free-text answer that matches no option is returned raw instead of mapped to the catch-all 'other' bucket, so rules on 'other' never match",
+    "how": "return the raw value instead of the catch-all id for unmatched input"
+   },
+   {
+    "name": "a squash of change records keeps the earlier added value when the same record is later updated, so the coalesced diff carries a stale value",
+    "how": "drop the update branch when coalescing an add followed by an update"
+   },
+   {
+    "name": "generated collections ship with framework-default access (any authenticated user reads/mutates all rows)",
+    "how": "n/a — native; assess with access on and a second user"
+   },
+   {
+    "name": "a default or fallback branch is taken even though a specific branch already matched, so both the chosen path and the fallback run (duplicated, wrong work)",
+    "how": "drop the matched flag so the default edge also fires when a concrete route matched"
+   },
+   {
+    "name": "an index into a flattened (group x item, query x class) array is computed with the wrong stride or without the group index, so elements are attributed to the wrong row",
+    "how": "divide a flattened index by the wrong dimension (or drop the group multiplier)"
+   },
+   {
+    "name": "merging overlapping intervals takes the later interval's end unconditionally instead of the max of both ends, so a nested interval shrinks the merged span",
+    "how": "assign end = next.end instead of max(end, next.end) when merging overlaps"
+   },
+   {
+    "name": "ref missing its id accepted; engine reads None-named resource",
+    "how": "neuter the None-id guard"
+   }
+  ]
+ }
+}

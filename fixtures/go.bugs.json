@@ -1,0 +1,6 @@
+{"bugs": [
+ {"id": "a", "title": "large orders get 20% off instead of 10%", "file": "pricing.go", "old": "total * 9 / 10", "new": "total * 8 / 10"},
+ {"id": "b", "title": "an order of exactly 100 pays full price", "file": "pricing.go", "old": "if total >= 100 {", "new": "if total > 100 {"},
+ {"id": "c", "title": "does not build", "file": "pricing.go", "old": "func Clamp(value, low, high int) int {", "new": "func Clamp(value, low, high int) string {"},
+ {"id": "d", "title": "hangs on small orders", "file": "pricing.go", "old": "\treturn total\n", "new": "\tfor {\n\t}\n"}
+]}
