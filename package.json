@@ -1,6 +1,6 @@
 {
   "name": "trenyx",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Plant realistic bugs in a throwaway copy of your repo and see which ones your tests catch. Runs on your machine, on your own AI key.",
   "license": "SEE LICENSE IN LICENSE AND catalogue/LICENSE",
   "type": "module",
@@ -10,7 +10,8 @@
   "files": [
     "dist/src",
     "catalogue",
-    "LICENSE"
+    "LICENSE",
+    "TRADEMARKS.md"
   ],
   "engines": {
     "node": ">=20.3"

@@ -19,7 +19,7 @@ import { baseline, intermittent, newFailing, settle, sharedFailing, unreliableCa
 import { Workspace, git } from "./workspace.js";
 import { ownKeyWriter, readBugList, savedListWriter, type BugWriter } from "./writer.js";
 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 const MAX_BUGS = 16;
 const MAX_CLEAN_RUNS = 4;
 const CHECK_RUNS = 3;                // extra clean runs after the bugs, when anything was caught

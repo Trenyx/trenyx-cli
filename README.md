@@ -153,6 +153,10 @@ the engine on real checkouts. `catalogue/slice.json` is the bundled catalogue
 planted in, never by whether they were caught, at most 36 per language, name and one-line how-to only.  Bug writing sits behind `BugWriter` (`src/writer.ts`) and the catalogue behind `CatalogueSource`
 (`src/catalogue.ts`), so neither the run nor the report depends on where they come from.
 
+## Trademarks
+
+The code is Apache 2.0, which does not grant rights to the Trenyx name (Apache 2.0, section 6). You may say a project was checked with the trenyx CLI. Only results that Trenyx runs itself may be called a Trenyx result or a Trenyx score; a self-run score is not one. See [TRADEMARKS.md](TRADEMARKS.md).
+
 ## Licence
 
 The code is Apache-2.0 (`LICENSE`); the bug catalogue in `catalogue/` has its own terms (`catalogue/LICENSE`): use it through this
